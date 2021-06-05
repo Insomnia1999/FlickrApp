@@ -6,7 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface FlickrApi {
-    @GET("?method=flickr.photos.search&format=json&nojsoncallback=1&api_key=${
-        Constants.flickrKey}")
-    suspend fun getPhotos(@Query("text") searchTerm: String): Call<Photos>
+    @GET("?method=flickr.photos.search&format=json&nojsoncallback=1&extras=owner_name&per_page=10&api_key=${Constants.flickrKey}")
+    fun getPhotos(@Query("text") searchTerm: String, @Query("page") page: Int): Call<Photos>
 }
