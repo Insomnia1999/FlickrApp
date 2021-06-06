@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="black30">#66000000</color>
+
     <color name="charcoalGrey15">#26323643</color>
     <color name="charcoalGrey">#323643</color>
 </resources>

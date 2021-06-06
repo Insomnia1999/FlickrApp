@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.test.flickrapp.R
 import com.test.flickrapp.data.PhotoResponse
 import com.test.flickrapp.data.State
@@ -15,7 +18,11 @@ import com.test.flickrapp.ui.main.adapter.PhotosAdapter
 import com.test.flickrapp.ui.main.adapter.PhotosClickListener
 import com.test.flickrapp.utils.PaginationScrollListener
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class MainFragment: Fragment(), PhotosClickListener {
 
@@ -26,6 +33,8 @@ class MainFragment: Fragment(), PhotosClickListener {
     private val photosAdapter: PhotosAdapter? by lazy {
         PhotosAdapter(this, requireActivity())
     }
+
+    private var searchJob: Job? = null
 
     private var currentPage = 1
     private var isPhotosLoading = false
@@ -59,7 +68,7 @@ class MainFragment: Fragment(), PhotosClickListener {
         photosViewModel.photosData.observe(viewLifecycleOwner, { photosResponse ->
 
             photosResponse?.let { photos ->
-                photos.photos.photo?.let { photoList ->
+                photos.photos?.photo?.let { photoList ->
                     if (photoList.isNotEmpty()) {
                         photoRecycler?.visibility = View.VISIBLE
                         emptyLayout.visibility = View.GONE
@@ -72,6 +81,9 @@ class MainFragment: Fragment(), PhotosClickListener {
                         emptyLayout.visibility = View.VISIBLE
                     }
 
+                } ?: run {
+                    photoRecycler?.visibility = View.GONE
+                    emptyLayout.visibility = View.VISIBLE
                 }
                 swipePhotos?.isRefreshing = false
                 isPhotosLoading = false
@@ -96,7 +108,7 @@ class MainFragment: Fragment(), PhotosClickListener {
 
     //Listeners
     override fun onPhotoClick(photoResponse: PhotoResponse) {
-
+        findNavController().navigate(MainFragmentDirections.goDetail(photoResponse.id, photoResponse.url))
     }
 
     private fun setRemoveButton() {
@@ -107,9 +119,16 @@ class MainFragment: Fragment(), PhotosClickListener {
 
     private fun setSearchBoxChangeListener() {
         searchBox.addTextChangedListener {
-            currentPage = 1
             swipePhotos.isRefreshing = true
-            photosViewModel.getPhotos(it.toString(), currentPage)
+            searchJob?.cancel()
+            searchJob = lifecycleScope.launch {
+                delay(1000)
+                photos.clear()
+                photosAdapter?.clear()
+                currentPage = 1
+                photosViewModel.getPhotos(it.toString(), currentPage)
+            }
+
         }
     }
     //Methods
@@ -144,7 +163,7 @@ class MainFragment: Fragment(), PhotosClickListener {
 
         })
 
-
+        photoRecycler?.post { layoutManager.setOrientation(LinearLayoutManager.VERTICAL) }
     }
 
     private fun setSwipePhotos() {

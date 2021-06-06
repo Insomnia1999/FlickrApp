@@ -3,4 +3,5 @@
 
     <string name="no_items">No se han encontrado resultados</string>
     <string name="search">Buscar</string>
+    <string name="detail">Detalle</string>
 </resources>

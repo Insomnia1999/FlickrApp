@@ -8,5 +8,52 @@
         android:name="com.test.flickrapp.ui.main.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/goDetail"
+            app:destination="@id/detailFragment">
+
+            <argument
+                android:name="id"
+                app:argType="string" />
+
+            <argument
+                android:name="url"
+                app:argType="string" />
+
+        </action>
+    </fragment>
+
+    <fragment android:id="@+id/detailFragment"
+        android:name="com.test.flickrapp.ui.detail.PhotoDetailFragment"
+        android:label="PhotoDetailFragment"
+        tools:layout="@layout/fragment_photo_detail">
+
+        <action android:id="@+id/goPhotoViewer"
+            app:destination="@id/photoViewerFragment">
+
+            <argument
+                android:name="url"
+                app:argType="string" />
+
+        </action>
+
+        <argument
+            android:name="id"
+            app:argType="string" />
+
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
+
+    <fragment android:id="@+id/photoViewerFragment"
+        android:name="com.test.flickrapp.ui.photoview.PhotoViewFragment"
+        android:label="PhotoViewerFragment"
+        tools:layout="@layout/fragment_photo_view">
+
+        <argument
+            android:name="url"
+            app:argType="string" />
+
     </fragment>
 </navigation>

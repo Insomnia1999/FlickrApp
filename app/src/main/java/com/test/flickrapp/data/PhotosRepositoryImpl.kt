@@ -11,4 +11,9 @@ class PhotosRepositoryImpl(private val flickrApi: FlickrApi): PhotosRepository {
     override suspend fun getImages(searchTerm: String, page: Int): Photos {
         return flickrApi.getPhotos(searchTerm, page).executeHandlingNetworkError()
     }
+
+    @Throws(NetworkErrorException::class, BadResponseException::class)
+    override suspend fun getPhotoDetail(id: String): PhotoDetail {
+        return flickrApi.getPhotoDetail(id).executeHandlingNetworkError()
+    }
 }
